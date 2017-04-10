@@ -27,7 +27,7 @@ public class CaptchaService {
     @Value("classpath:tesseract")
     private Resource tesseractConfigPath;
     
-    private static final int MAX_THRESHOLD = 180;
+    private static final int MAX_THRESHOLD = 160;
     private static final int MIN_THRESHOLD = 90;
     private static final String CHAR_WHITELIST = "abcdefghijklmnopqrstuvwxyz0123456789";
 
@@ -64,7 +64,8 @@ public class CaptchaService {
             }
             
             OpenCvUtil.applyMask(srcImage, cleanedImage, maskImage);
-            //cleanedImage = clearNoise(cleanedImage, threshold);
+            cleanedImage = clearNoise(cleanedImage, 100);
+            cleanedImage = clearNoise(cleanedImage, 180);
             if (debug) {
                 OpenCvUtil.writeImage(getDebugImageFile(fileName, debugDirectory, "cleaned"), cleanedImage);
             }
