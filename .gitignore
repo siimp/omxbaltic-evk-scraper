@@ -24,3 +24,5 @@ dist/
 nbdist/
 .nb-gradle/
 bin/
+
+/src/test/java/ee/siimp/oes/debug

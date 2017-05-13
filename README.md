@@ -5,4 +5,8 @@
 * Tesseract for character recognition
 
 ## Current status
-* Only 4 image out of 10 passes test
+* Only 4 captcha images out of 10 are recognised correctly.
+
+## TODO
+* Grab more sample images
+* Make at least 80% of tests pass
