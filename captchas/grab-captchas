@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+ENDPOINT=http://statistics.e-register.ee
+read -p "insert how many captcha images to grab: " image_count
+echo "downloading images: "
+
+for (( i=1; i<=$image_count; i++ ))
+do
+	CAPTCHA_SRC=$(curl --silent "$ENDPOINT/et/shareholders" | grep "/graphics/captcha" | sed "s/.* src=\"\(.*\)\".*/\1/")
+	echo "$i. $CAPTCHA_SRC"
+	wget --quiet "$ENDPOINT$CAPTCHA_SRC"
+done
+
+
+
+
