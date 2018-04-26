@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import static org.bytedeco.javacpp.opencv_core.Mat;
 
 @Service
-public class TesseractService {
+public class TesseractService implements LetterRecognitionService {
 
     private static final Logger LOG = LoggerFactory.getLogger(TesseractService.class);
 

@@ -16,7 +16,7 @@ public class CaptchaService {
 
     private static final Logger LOG = LoggerFactory.getLogger(CaptchaService.class);
 
-    private TesseractService tesseractService;
+    private LetterRecognitionService letterRecognitionService;
 
     public String solveImage(String fileName) {
         LOG.info("solving image {}", fileName);
@@ -26,7 +26,7 @@ public class CaptchaService {
 
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < letterImages.size(); i++) {
-            stringBuilder.append(tesseractService.readSingleLetter(letterImages.get(i)));
+            stringBuilder.append(letterRecognitionService.readSingleLetter(letterImages.get(i)));
         }
 
         String result = stringBuilder.toString();
