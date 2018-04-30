@@ -104,7 +104,7 @@ public class OpenCvUtil {
     }
 
     private static boolean isDoubleLetter(Rect r) {
-        return r.width() >= MAX_LETTER_WIDTH;
+        return r.width() > MAX_LETTER_WIDTH;
     }
 
     private static boolean isPotensialLetter(Rect r) {
@@ -114,7 +114,6 @@ public class OpenCvUtil {
     private static boolean isFullImageContour(opencv_core.Rect rect, Mat image) {
         return rect.size().width() == image.size().width();
     }
-
 
 }
 
