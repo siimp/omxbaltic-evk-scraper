@@ -20,7 +20,10 @@ import static org.bytedeco.javacpp.opencv_core.Rect;
 public class OpenCvUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenCvUtil.class);
-    private static final int LETTER_WIDTH = 10;
+    private static final int MIN_LETTER_WIDTH = 10;
+    private static final int MAX_LETTER_WIDTH = 28;
+    private static final int MIN_LETTER_HEIGHT = 20;
+    private static final int LETTER_TOP_PADDING = 1;
 
     private OpenCvUtil() {
     }
@@ -58,11 +61,20 @@ public class OpenCvUtil {
 
             for (int i = 0; i < contours.size(); i++) {
                 try (opencv_core.Rect r = opencv_imgproc.boundingRect(contours.get(i))) {
-                    if (isFullImageContour(r, image) || !isPotensialLetter(r)) {
+
+                    if (isFullImageContour(r, image)) {
                         continue;
                     }
-                    Mat letterImage = image.apply(r).adjustROI(5, 0, 0, 0);
-                    letters.add(new MatWithLocation(letterImage, r.x()));
+
+                    LOG.debug("contour w={}, h={}, isPotensialLetter={}, isDoubleLetter={}", r.width(), r.height(),
+                            isPotensialLetter(r), isDoubleLetter(r));
+
+
+                    if (isPotensialLetter(r) && isDoubleLetter(r)) {
+                        addDoubleLetter(image, letters, r);
+                    } else if (isPotensialLetter(r)) {
+                        addSingleLetter(image, letters, r);
+                    }
                 } catch (Exception e) {
                     LOG.error(e.getMessage(), e);
                 }
@@ -73,13 +85,30 @@ public class OpenCvUtil {
 
         return letters.stream()
                 .sorted(Comparator.comparingInt(MatWithLocation::getX))
-                .limit(lettersOnImage)
+                //.limit(lettersOnImage)
                 .map(MatWithLocation::getMat)
                 .collect(Collectors.toList());
     }
 
+    private static void addSingleLetter(Mat image, List<MatWithLocation> letters, Rect r) {
+        Mat letterImage = image.apply(r).adjustROI(LETTER_TOP_PADDING, 0, 0, 0);
+        letters.add(new MatWithLocation(letterImage, r.x()));
+    }
+
+    private static void addDoubleLetter(Mat image, List<MatWithLocation> letters, Rect r) {
+        int singleLetterWidth = r.width() / 2;
+        Mat firstLetterImage = image.apply(r).adjustROI(LETTER_TOP_PADDING, 0, 0, -singleLetterWidth);
+        letters.add(new MatWithLocation(firstLetterImage, r.x()));
+        Mat secondLetterImage = image.apply(r).adjustROI(LETTER_TOP_PADDING, 0, -singleLetterWidth, 0);
+        letters.add(new MatWithLocation(secondLetterImage, r.x() + singleLetterWidth));
+    }
+
+    private static boolean isDoubleLetter(Rect r) {
+        return r.width() >= MAX_LETTER_WIDTH;
+    }
+
     private static boolean isPotensialLetter(Rect r) {
-        return r.width() >= LETTER_WIDTH;
+        return r.width() >= MIN_LETTER_WIDTH && r.height() >= MIN_LETTER_HEIGHT;
     }
 
     private static boolean isFullImageContour(opencv_core.Rect rect, Mat image) {
