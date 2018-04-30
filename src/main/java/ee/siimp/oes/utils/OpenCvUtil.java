@@ -21,9 +21,10 @@ public class OpenCvUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenCvUtil.class);
     private static final int MIN_LETTER_WIDTH = 10;
-    private static final int MAX_LETTER_WIDTH = 28;
+    private static final int MAX_LETTER_WIDTH = 26;
     private static final int MIN_LETTER_HEIGHT = 20;
-    private static final int LETTER_TOP_PADDING = 1;
+    //for i and j dots
+    private static final int LETTER_TOP_PADDING = 6;
 
     private OpenCvUtil() {
     }

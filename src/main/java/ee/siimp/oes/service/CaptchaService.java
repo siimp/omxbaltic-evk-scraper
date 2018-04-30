@@ -36,7 +36,7 @@ public class CaptchaService {
 
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < letterImages.size(); i++) {
-            stringBuilder.append(letterRecognitionService.readSingleLetter(letterImages.get(i)));
+            stringBuilder.append(letterRecognitionService.read(letterImages.get(i)));
             debugSingleLetterImage(fileName, letterImages, i);
         }
 

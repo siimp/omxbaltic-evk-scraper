@@ -11,16 +11,16 @@ import org.springframework.stereotype.Service;
 import static org.bytedeco.javacpp.opencv_core.Mat;
 
 @Service
-public class TesseractService implements LetterRecognitionService {
+public class OcrLetterRecognitionService implements LetterRecognitionService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TesseractService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OcrLetterRecognitionService.class);
 
     private static final String CHAR_WHITELIST = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789";
 
     @Value("classpath:tesseract")
     private Resource tesseractConfigPath;
 
-    public String readSingleLetter(Mat image) {
+    public String read(Mat image) {
         String result = null;
         try (tesseract.TessBaseAPI api = new tesseract.TessBaseAPI();) {
             if (api.Init(tesseractConfigPath.getFile().getAbsolutePath(), "eng") != 0) {

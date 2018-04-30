@@ -1,7 +1,7 @@
 package ee.siimp.oes.config;
 
 import ee.siimp.oes.service.LetterRecognitionService;
-import ee.siimp.oes.service.TesseractService;
+import ee.siimp.oes.service.OcrLetterRecognitionService;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,10 +10,10 @@ import org.springframework.context.annotation.Configuration;
 @AllArgsConstructor
 public class OcrLetterRecognitionConfig {
 
-    private TesseractService tesseractService;
+    private OcrLetterRecognitionService ocrLetterRecognitionService;
 
     @Bean
     public LetterRecognitionService letterRecognitionService() {
-        return tesseractService;
+        return ocrLetterRecognitionService;
     }
 }
