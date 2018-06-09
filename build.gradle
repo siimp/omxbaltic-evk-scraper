@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '2.0.1.RELEASE'
+        springBootVersion = '2.0.2.RELEASE'
     }
     repositories {
         mavenCentral()
@@ -43,6 +43,8 @@ dependencies {
     compile("org.bytedeco:javacv-platform:${openCvVersion}")
     compile("org.bytedeco.javacpp-presets:tesseract:${tesseractVersion}")
     compile("org.bytedeco.javacpp-presets:tesseract-platform:${tesseractVersion}")
+
+    compile("org.mockito:mockito-core:2.18.3")
 
     compileOnly('org.projectlombok:lombok')
 
