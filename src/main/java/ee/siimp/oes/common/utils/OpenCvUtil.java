@@ -1,4 +1,4 @@
-package ee.siimp.oes.utils;
+package ee.siimp.oes.common.utils;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

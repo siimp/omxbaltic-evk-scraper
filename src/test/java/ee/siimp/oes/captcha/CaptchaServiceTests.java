@@ -1,4 +1,4 @@
-package ee.siimp.oes.service;
+package ee.siimp.oes.captcha;
 
 import org.junit.Assert;
 import org.junit.Test;

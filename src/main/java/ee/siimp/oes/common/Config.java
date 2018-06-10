@@ -1,4 +1,4 @@
-package ee.siimp.oes.service;
+package ee.siimp.oes.common;
 
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;

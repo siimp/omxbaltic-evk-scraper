@@ -1,4 +1,4 @@
-package ee.siimp.oes.service;
+package ee.siimp.oes.recognition;
 
 import org.bytedeco.javacpp.opencv_core;
 

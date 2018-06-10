@@ -1,6 +1,6 @@
-package ee.siimp.oes.service;
+package ee.siimp.oes.captcha;
 
-import ee.siimp.oes.model.CaptchaImage;
+import ee.siimp.oes.common.Config;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

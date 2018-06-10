@@ -1,4 +1,4 @@
-package ee.siimp.oes.model;
+package ee.siimp.oes.captcha;
 
 import lombok.Getter;
 

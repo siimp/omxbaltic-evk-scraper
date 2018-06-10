@@ -1,7 +1,7 @@
-package ee.siimp.oes.service;
+package ee.siimp.oes.captcha;
 
-import ee.siimp.oes.model.CaptchaImage;
-import ee.siimp.oes.utils.OpenCvUtil;
+import ee.siimp.oes.common.Config;
+import ee.siimp.oes.common.utils.OpenCvUtil;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
