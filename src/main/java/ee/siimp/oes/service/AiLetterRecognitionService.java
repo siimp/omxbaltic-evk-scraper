@@ -11,10 +11,8 @@ public class AiLetterRecognitionService implements LetterRecognitionService {
 
     private static final Logger LOG = LoggerFactory.getLogger(AiLetterRecognitionService.class);
 
-    public String read(Mat image) {
-        // TODO
+    @Override
+    public String read(Mat mat) {
         return null;
     }
-
-
 }

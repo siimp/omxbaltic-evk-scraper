@@ -13,6 +13,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.bytedeco.javacpp.helper.opencv_core.CV_RGB;
 import static org.bytedeco.javacpp.opencv_core.Mat;
 import static org.bytedeco.javacpp.opencv_core.Rect;
 
@@ -20,6 +21,9 @@ import static org.bytedeco.javacpp.opencv_core.Rect;
 public class OpenCvUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenCvUtil.class);
+
+    //private static final opencv_core.Scalar RED = new opencv_core.Scalar(CV_RGB(255, 0, 0));
+    private static final opencv_core.Scalar WHITE = new opencv_core.Scalar(CV_RGB(255, 255, 255));
     private static final int MIN_LETTER_WIDTH = 10;
     private static final int MAX_LETTER_WIDTH = 26;
     private static final int MIN_LETTER_HEIGHT = 20;
@@ -55,10 +59,10 @@ public class OpenCvUtil {
         return result;
     }
 
-    public static List<Mat> toLetterImages(Mat image, int lettersOnImage) {
+    public static List<Mat> toLetterImages(Mat image) {
         List<MatWithLocation> letters = new ArrayList<>();
-        try (opencv_core.MatVector contours = new opencv_core.MatVector(); Mat hierarhy = new Mat();) {
-            opencv_imgproc.findContours(image, contours, hierarhy, opencv_imgproc.CV_RETR_TREE, opencv_imgproc.CV_CHAIN_APPROX_SIMPLE);
+        try (opencv_core.MatVector contours = new opencv_core.MatVector(); Mat hierarchy = new Mat();) {
+            opencv_imgproc.findContours(image, contours, hierarchy, opencv_imgproc.CV_RETR_TREE, opencv_imgproc.CV_CHAIN_APPROX_SIMPLE);
 
             for (int i = 0; i < contours.size(); i++) {
                 try (opencv_core.Rect r = opencv_imgproc.boundingRect(contours.get(i))) {
@@ -116,6 +120,36 @@ public class OpenCvUtil {
         return rect.size().width() == image.size().width();
     }
 
+    public static Mat removeArtifacts(Mat image) {
+        try (opencv_core.MatVector contours = new opencv_core.MatVector(); Mat hierarchy = new Mat();) {
+            opencv_imgproc.findContours(image, contours, hierarchy, opencv_imgproc.CV_RETR_TREE, opencv_imgproc.CV_CHAIN_APPROX_SIMPLE);
+
+            for (int i = 0; i < contours.size(); i++) {
+                try (opencv_core.Rect r = opencv_imgproc.boundingRect(contours.get(i))) {
+                    if (isFullImageContour(r, image)) {
+                        continue;
+                    }
+
+                    if (isArtifact(r)) {
+                        opencv_imgproc.drawContours(image, contours, i, WHITE,
+                                opencv_imgproc.CV_FILLED, opencv_core.LINE_8, null, Integer.MAX_VALUE, null);
+                    }
+                } catch (Exception e) {
+                    LOG.error(e.getMessage(), e);
+                }
+            }
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+        }
+
+        return image;
+    }
+
+    private static boolean isArtifact(Rect r) {
+        return r.width() < MIN_LETTER_WIDTH || r.height() < MIN_LETTER_HEIGHT ||
+                //r.width() > 2 * MAX_LETTER_WIDTH ||
+                (r.width() > MAX_LETTER_WIDTH && r.height() < MIN_LETTER_HEIGHT);
+    }
 }
 
 @Getter
