@@ -8,24 +8,24 @@ import org.bytedeco.javacpp.opencv_imgproc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.bytedeco.javacpp.helper.opencv_core.CV_RGB;
-import static org.bytedeco.javacpp.opencv_core.Mat;
-import static org.bytedeco.javacpp.opencv_core.Rect;
+import static org.bytedeco.javacpp.opencv_core.*;
 
 
 public class OpenCvUtil {
 
-    private static final Logger LOG = LoggerFactory.getLogger(OpenCvUtil.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    //private static final opencv_core.Scalar RED = new opencv_core.Scalar(CV_RGB(255, 0, 0));
+    private static final opencv_core.Scalar RED = new opencv_core.Scalar(CV_RGB(255, 0, 0));
     private static final opencv_core.Scalar WHITE = new opencv_core.Scalar(CV_RGB(255, 255, 255));
     private static final int MIN_LETTER_WIDTH = 10;
-    private static final int MAX_LETTER_WIDTH = 26;
+    private static final int MAX_LETTER_WIDTH = 32;
     private static final int MIN_LETTER_HEIGHT = 20;
     //for i and j dots
     private static final int LETTER_TOP_PADDING = 6;
@@ -67,13 +67,12 @@ public class OpenCvUtil {
             for (int i = 0; i < contours.size(); i++) {
                 try (opencv_core.Rect r = opencv_imgproc.boundingRect(contours.get(i))) {
 
-                    if (isFullImageContour(r, image)) {
-                        continue;
-                    }
-
                     LOG.debug("contour w={}, h={}, isPotensialLetter={}, isDoubleLetter={}", r.width(), r.height(),
                             isPotensialLetter(r), isDoubleLetter(r));
 
+                    if (isFullImageContour(r, image)) {
+                        continue;
+                    }
 
                     if (isPotensialLetter(r) && isDoubleLetter(r)) {
                         addDoubleLetter(image, letters, r);
@@ -90,7 +89,6 @@ public class OpenCvUtil {
 
         return letters.stream()
                 .sorted(Comparator.comparingInt(MatWithLocation::getX))
-                //.limit(lettersOnImage)
                 .map(MatWithLocation::getMat)
                 .collect(Collectors.toList());
     }
@@ -122,7 +120,7 @@ public class OpenCvUtil {
 
     public static Mat removeArtifacts(Mat image) {
         try (opencv_core.MatVector contours = new opencv_core.MatVector(); Mat hierarchy = new Mat();) {
-            opencv_imgproc.findContours(image, contours, hierarchy, opencv_imgproc.CV_RETR_TREE, opencv_imgproc.CV_CHAIN_APPROX_SIMPLE);
+            opencv_imgproc.findContours(image, contours, hierarchy, opencv_imgproc.CV_RETR_LIST, opencv_imgproc.CV_CHAIN_APPROX_NONE);
 
             for (int i = 0; i < contours.size(); i++) {
                 try (opencv_core.Rect r = opencv_imgproc.boundingRect(contours.get(i))) {
@@ -149,6 +147,25 @@ public class OpenCvUtil {
         return r.width() < MIN_LETTER_WIDTH || r.height() < MIN_LETTER_HEIGHT ||
                 //r.width() > 2 * MAX_LETTER_WIDTH ||
                 (r.width() > MAX_LETTER_WIDTH && r.height() < MIN_LETTER_HEIGHT);
+    }
+
+    public static Mat drawDetectedContours(Mat image, List<Mat> letters) {
+        Mat result = image.clone();
+        try (opencv_core.MatVector contours = new opencv_core.MatVector(letters.toArray(new Mat[0]))) {
+            for (int i = 0; i < contours.size(); i++) {
+                try (opencv_core.Rect r = opencv_imgproc.boundingRect(contours.get(i))) {
+                    opencv_imgproc.rectangle(result, r, RED);
+                }
+            }
+        }
+        return result;
+    }
+
+    public static Mat toMarginImage(Mat image, int size) {
+        Mat result = image.clone();
+        opencv_imgproc.rectangle(result, new Point(0, 0), new Point(image.cols(), size), WHITE);
+        opencv_imgproc.rectangle(result, new Point(0, image.rows() - size), new Point(image.cols(), image.rows() - size), WHITE);
+        return result;
     }
 }
 

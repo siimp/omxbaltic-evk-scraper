@@ -1,28 +1,22 @@
 package ee.siimp.oes.captcha;
 
-import ee.siimp.oes.common.Config;
 import ee.siimp.oes.recognition.LetterRecognitionService;
-import ee.siimp.oes.common.utils.OpenCvUtil;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
-import static org.bytedeco.javacpp.opencv_core.Mat;
+import java.lang.invoke.MethodHandles;
 
 @Service
 @AllArgsConstructor
 public class CaptchaService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CaptchaService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private LetterRecognitionService letterRecognitionService;
 
     private CaptchaImageService captchaImageService;
-
-    private Config config;
 
     public String solveImage(String fileName) {
         LOG.info("solving image {}", fileName);
@@ -37,27 +31,12 @@ public class CaptchaService {
             String letter = letterRecognitionService.read(withLetters.getLetterImages().get(i));
             LOG.debug("letter {} -> {}", i, letter);
             stringBuilder.append(letter);
-            debugSingleLetterImage(fileName, withLetters.getLetterImages(), i);
         }
 
         String result = stringBuilder.toString();
         LOG.info("result was {}", result);
 
         return result;
-    }
-
-    //TODO: refactor debug methods out
-    private void debugSingleLetterImage(String originalImageName, List<Mat> letterImages, int letterIndex) {
-        if (Boolean.TRUE.equals(config.getDebugEnabled())) {
-            String cleanedLetterImageName = getDebugFile(originalImageName, ".letter." + letterIndex + ".png");
-            LOG.debug("saving letter image {}", cleanedLetterImageName);
-            OpenCvUtil.writeImage(cleanedLetterImageName, letterImages.get(letterIndex));
-        }
-    }
-
-    private String getDebugFile(String originalImageName, String suffix) {
-        return config.getDebugPath() + "/" +
-                originalImageName.substring(originalImageName.lastIndexOf('/') + 1) + suffix;
     }
 
 }

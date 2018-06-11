@@ -8,12 +8,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
+import java.lang.invoke.MethodHandles;
+
 import static org.bytedeco.javacpp.opencv_core.Mat;
 
 @Service
 public class OcrLetterRecognitionService implements LetterRecognitionService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(OcrLetterRecognitionService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private static final String CHAR_WHITELIST = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789";
 
